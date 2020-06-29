@@ -1,0 +1,3 @@
+include ':CollageView'
+include ':app'
+rootProject.name = "CollageViewExample"
