@@ -2,19 +2,16 @@ package com.mlucasmateus.collageview
 
 import android.content.Context
 import android.graphics.Color
-import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.annotation.Px
-import java.lang.IllegalStateException
 import kotlin.math.floor
 
-abstract class CollageView(context: Context): FrameLayout(context) {
+abstract class CollageView(context: Context): GridLayout(context) {
     protected var cellWidth = 0
     protected var cellHeight = 0
-    protected val grid: GridLayout = GridLayout(context)
     protected val linearLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
         LinearLayout.LayoutParams.MATCH_PARENT)
     private lateinit var gridAttributes: GridAttributes
@@ -23,8 +20,8 @@ abstract class CollageView(context: Context): FrameLayout(context) {
                     val columnPosition: Int = 0,
                     val rowSpan: Int = 1,
                     val columnSpan: Int = 1) {
-        val rowSpec: GridLayout.Spec = GridLayout.spec(rowPosition, rowSpan)
-        val columnSpec: GridLayout.Spec = GridLayout.spec(columnPosition, columnSpan)
+        val rowSpec: Spec = spec(rowPosition, rowSpan)
+        val columnSpec: Spec = spec(columnPosition, columnSpan)
     }
 
     open class GridAttributes {
@@ -59,7 +56,7 @@ abstract class CollageView(context: Context): FrameLayout(context) {
         val ceilingBorderSize = floor(borderSize/2f).toInt()
 
         gridAttributes.getSlotList().forEachIndexed { i: Int, slot: Slot ->
-            grid.getChildAt(i).setPadding(
+            getChildAt(i).setPadding(
                 if (slot.columnPosition == 0) borderSize else ceilingBorderSize,
                 if (slot.rowPosition == 0) borderSize else ceilingBorderSize,
                 if (slot.columnPosition + slot.columnSpan == gridAttributes.getColumnCount())
@@ -72,20 +69,18 @@ abstract class CollageView(context: Context): FrameLayout(context) {
 
     fun buildGrid(gridAttributes: GridAttributes = GridAttributes()) {
         if (layoutParams == null)
-            throw IllegalStateException()
+            throw IllegalStateException("LayoutParams wasn't set yet. This CollageView doesn't have a height or a width")
         this.gridAttributes = gridAttributes
 
-        grid.rowCount = gridAttributes.getRowCount()
-        grid.columnCount = gridAttributes.getColumnCount()
+        rowCount = gridAttributes.getRowCount()
+        columnCount = gridAttributes.getColumnCount()
 
-        cellWidth = layoutParams.width / grid.columnCount
-        cellHeight = layoutParams.height / grid.rowCount
+        cellWidth = layoutParams.width / columnCount
+        cellHeight = layoutParams.height / rowCount
 
         gridAttributes.getSlotList().forEach {
-            grid.addView(getItemPlaceholder(it))
+            addView(getItemPlaceholder(it))
         }
-
-        addView(grid)
     }
 
     abstract fun getItemPlaceholder(slot: Slot): LinearLayout

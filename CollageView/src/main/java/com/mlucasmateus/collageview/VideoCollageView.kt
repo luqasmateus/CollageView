@@ -1,8 +1,6 @@
 package com.mlucasmateus.collageview
 
 import android.content.Context
-import android.graphics.Color
-import android.widget.GridLayout
 import android.widget.LinearLayout
 import com.yqritc.scalablevideoview.ScalableVideoView
 
@@ -10,7 +8,7 @@ class VideoCollageView(context: Context): CollageView(context) {
     override fun getItemPlaceholder(slot: Slot): LinearLayout {
         val videoPlaceholder = LinearLayout(context)
 
-        val videoPlaceholderParams = GridLayout.LayoutParams(slot.rowSpec, slot.columnSpec)
+        val videoPlaceholderParams = LayoutParams(slot.rowSpec, slot.columnSpec)
         videoPlaceholderParams.width = cellWidth * slot.columnSpan
         videoPlaceholderParams.height = cellHeight * slot.rowSpan
 
