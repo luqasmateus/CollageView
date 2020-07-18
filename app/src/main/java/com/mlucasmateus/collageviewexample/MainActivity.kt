@@ -1,7 +1,9 @@
 package com.mlucasmateus.collageviewexample
 
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Environment
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.mlucasmateus.collageview.CollageView
@@ -31,5 +33,12 @@ class MainActivity : AppCompatActivity() {
         constraintLayout.addView(collageView)
 
         collageView.setGridBorderSize(10)
+
+        val path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
+        collageView.addImage("$path/TestImage.jpg", 0)
+        collageView.addVideo("$path/TestVideo.mp4", 1, MediaPlayer.OnPreparedListener {
+            it.start()
+            it.pause()
+        })
     }
 }

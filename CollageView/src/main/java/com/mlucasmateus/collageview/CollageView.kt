@@ -2,12 +2,15 @@ package com.mlucasmateus.collageview
 
 import android.content.Context
 import android.graphics.Color
+import android.media.MediaPlayer
+import android.net.Uri
 import android.view.View
 import android.widget.GridLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.Px
+import com.yqritc.scalablevideoview.ScalableType
 import com.yqritc.scalablevideoview.ScalableVideoView
 import kotlin.math.floor
 
@@ -51,6 +54,37 @@ class CollageView(context: Context): GridLayout(context) {
         }
 
         fun getSlotList() = slotList
+
+        fun getSlotCount() = slotList.size
+    }
+
+    fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener) {
+        if (index >= 0 && index < gridAttributes.getSlotCount()) {
+            val childView = getChildAt(index) as LinearLayout
+            childView.removeAllViews()
+            val videoView = ScalableVideoView(context)
+            videoView.layoutParams = linearLayoutParams
+            videoView.setDataSource(path)
+            videoView.setScalableType(ScalableType.CENTER_CROP)
+            videoView.prepare(onPreparedListener)
+            childView.addView(videoView)
+        }else
+            throw NoSuchElementException("This CollageView doesn't have a slot at index $index." +
+                    "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}")
+    }
+
+    fun addImage(path: String, index: Int) {
+        if (index <= 0 && index < gridAttributes.getSlotCount()) {
+            val childView = getChildAt(index) as LinearLayout
+            childView.removeAllViews()
+            val imageView = ImageView(context)
+            imageView.layoutParams = linearLayoutParams
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageView.setImageURI(Uri.parse(path))
+            childView.addView(imageView)
+        }else
+            throw NoSuchElementException("This CollageView doesn't have a slot at index $index." +
+                    "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}")
     }
 
     fun setGridBorderSize(@Px borderSize: Int) {
@@ -102,18 +136,6 @@ class CollageView(context: Context): GridLayout(context) {
         basicView.setBackgroundColor(Color.BLACK)
         basicView.layoutParams = linearLayoutParams
         return basicView
-    }
-
-    private fun getImageView(): ImageView {
-        val imageView = ImageView(context)
-        imageView.layoutParams = linearLayoutParams
-        return imageView
-    }
-
-    private fun getVideoView(): ScalableVideoView {
-        val videoView = ScalableVideoView(context)
-        videoView.layoutParams = linearLayoutParams
-        return videoView
     }
 
     private fun getImageButton(): ImageButton {
