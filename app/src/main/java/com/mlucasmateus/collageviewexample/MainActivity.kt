@@ -42,10 +42,7 @@ class MainActivity : AppCompatActivity() {
         val path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
         collageView.setBorderSize(10)
         collageView.fillWithButtons(R.drawable.flying_cat, View.OnClickListener {
-            collageView.fillWithVideos("$path/TestVideo.mp4", MediaPlayer.OnPreparedListener {
-                it.start()
-                it.pause()
-            })
+            collageView.fillWithImages("$path/TestImage.jpg")
         })
 
         collageView.addImage("$path/TestImage.jpg", 0)
@@ -53,5 +50,10 @@ class MainActivity : AppCompatActivity() {
             it.start()
             it.pause()
         })
+
+        collageView.getButton(1).setOnClickListener {
+            Toast.makeText(this, "Testing Toast", Toast.LENGTH_LONG).show()
+            collageView.getImage(0).alpha = 0.2f
+        }
     }
 }

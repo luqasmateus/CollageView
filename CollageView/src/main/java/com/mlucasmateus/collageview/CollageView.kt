@@ -74,6 +74,8 @@ class CollageView(context: Context): GridLayout(context) {
             addItem(item, i)
     }
 
+    fun getItem(index: Int) = (getChildAt(index) as LinearLayout).getChildAt(0)
+
     fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener) {
         val videoView = ScalableVideoView(context)
         videoView.setDataSource(path)
@@ -87,6 +89,8 @@ class CollageView(context: Context): GridLayout(context) {
             addVideo(path, i, onPreparedListener)
     }
 
+    fun getVideo(index: Int): ScalableVideoView = getItem(index) as ScalableVideoView
+
     fun addImage(path: String, index: Int) {
         val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -98,6 +102,8 @@ class CollageView(context: Context): GridLayout(context) {
         for (i in 0 until gridAttributes.getSlotCount())
             addImage(path, i)
     }
+
+    fun getImage(index: Int) = getItem(index) as ImageView
 
     fun addButton(resId: Int, index: Int, listener: OnClickListener? = null) {
         val imageButton = ImageButton(context)
@@ -114,6 +120,10 @@ class CollageView(context: Context): GridLayout(context) {
         for (i in 0 until gridAttributes.getSlotCount())
             addButton(resId, i, listener)
     }
+
+    fun getButton(index: Int) = getItem(index) as ImageButton
+
+    fun getGridAttributes() = gridAttributes
 
     fun setBorderSize(@Px borderSize: Int) {
         val floorBorderSize = floor(borderSize/2f).toInt()
