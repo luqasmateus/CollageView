@@ -2,21 +2,23 @@ package com.mlucasmateus.collageview
 
 import android.content.Context
 import android.graphics.Color
+import android.view.View
 import android.widget.GridLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.Px
+import com.yqritc.scalablevideoview.ScalableVideoView
 import kotlin.math.floor
 
-abstract class CollageView(context: Context): GridLayout(context) {
-    protected var cellWidth = 0
-    protected var cellHeight = 0
-    protected val linearLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+class CollageView(context: Context): GridLayout(context) {
+    private var cellWidth = 0
+    private var cellHeight = 0
+    private val linearLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
         LinearLayout.LayoutParams.MATCH_PARENT)
     private lateinit var gridAttributes: GridAttributes
 
-    open class Slot(val rowPosition: Int = 0,
+    class Slot(val rowPosition: Int = 0,
                     val columnPosition: Int = 0,
                     val rowSpan: Int = 1,
                     val columnSpan: Int = 1) {
@@ -24,7 +26,7 @@ abstract class CollageView(context: Context): GridLayout(context) {
         val columnSpec: Spec = spec(columnPosition, columnSpan)
     }
 
-    open class GridAttributes {
+    class GridAttributes {
         private var rowCount = 1
         private var columnCount = 1
         private var slotList: Array<out Slot> = arrayOf(Slot())
@@ -83,16 +85,38 @@ abstract class CollageView(context: Context): GridLayout(context) {
         }
     }
 
-    abstract fun getItemPlaceholder(slot: Slot): LinearLayout
+    private fun getItemPlaceholder(slot: Slot): LinearLayout {
+        val videoPlaceholder = LinearLayout(context)
 
-    protected fun getImageView(): ImageView {
+        val videoPlaceholderParams = LayoutParams(slot.rowSpec, slot.columnSpec)
+        videoPlaceholderParams.width = cellWidth * slot.columnSpan
+        videoPlaceholderParams.height = cellHeight * slot.rowSpan
+
+        videoPlaceholder.layoutParams = videoPlaceholderParams
+        videoPlaceholder.addView(getBasicView())
+        return videoPlaceholder
+    }
+
+    private fun getBasicView(): View {
+        val basicView = View(context)
+        basicView.setBackgroundColor(Color.BLACK)
+        basicView.layoutParams = linearLayoutParams
+        return basicView
+    }
+
+    private fun getImageView(): ImageView {
         val imageView = ImageView(context)
         imageView.layoutParams = linearLayoutParams
-        imageView.visibility = GONE
         return imageView
     }
 
-    protected fun getImageButton(): ImageButton {
+    private fun getVideoView(): ScalableVideoView {
+        val videoView = ScalableVideoView(context)
+        videoView.layoutParams = linearLayoutParams
+        return videoView
+    }
+
+    private fun getImageButton(): ImageButton {
         val imageButton = ImageButton(context)
         imageButton.layoutParams = linearLayoutParams
         imageButton.setBackgroundColor(Color.BLACK)

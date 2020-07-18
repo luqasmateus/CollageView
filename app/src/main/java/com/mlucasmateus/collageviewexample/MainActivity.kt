@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.mlucasmateus.collageview.CollageView
-import com.mlucasmateus.collageview.VideoCollageView
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         constraintLayoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
         constraintLayoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
 
-        val collageView = VideoCollageView(this)
+        val collageView = CollageView(this)
         collageView.layoutParams = constraintLayoutParams
         collageView.buildGrid(CollageView.GridAttributes().apply {
             setRowCount(1)
