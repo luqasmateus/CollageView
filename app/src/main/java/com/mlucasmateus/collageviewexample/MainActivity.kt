@@ -20,14 +20,18 @@ class MainActivity : AppCompatActivity() {
         constraintLayoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
         //var collageView = VideoCollageView(this)
         val collageViewBuilder = VideoCollageView(this).Builder()
-        collageViewBuilder.apply {
+        /*collageViewBuilder.apply {
             setRowCount(2)
             setColumnCount(2)
             addSlots(CollageView.Slot(),
                 CollageView.Slot(0, 1),
                 CollageView.Slot(1,0),
                 CollageView.Slot(1,1))
-        }
+        }*/
+        collageViewBuilder.setRowCount(2).setColumnCount(2).addSlots(CollageView.Slot(),
+            CollageView.Slot(0, 1),
+            CollageView.Slot(1,0),
+            CollageView.Slot(1,1))
         val collageView = collageViewBuilder.build(600, 600) as VideoCollageView
 
         collageView.layoutParams = constraintLayoutParams

@@ -2,6 +2,7 @@ package com.mlucasmateus.collageview
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import com.yqritc.scalablevideoview.ScalableVideoView
@@ -19,7 +20,7 @@ class VideoCollageView(context: Context): CollageView(context) {
         videoPlaceholderParams.height = cellHeight * rowSpec.size
 
         videoPlaceholder.layoutParams = videoPlaceholderParams
-        videoPlaceholder.addView(getButton())
+        videoPlaceholder.addView(getImageButton())
         videoPlaceholder.addView(getVideoView())
         videoPlaceholder.addView(getImageView())
         return videoPlaceholder

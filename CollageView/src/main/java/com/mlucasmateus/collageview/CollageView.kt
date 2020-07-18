@@ -2,6 +2,7 @@ package com.mlucasmateus.collageview
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.ImageButton
@@ -16,6 +17,7 @@ abstract class CollageView(context: Context): FrameLayout(context) {
         LinearLayout.LayoutParams.MATCH_PARENT)
     protected lateinit var childRowSpecs: Array<CustomSpec>
     protected lateinit var childColumnSpecs: Array<CustomSpec>
+    protected val logTag = "myLog"
 
     open class Slot(val rowPosition: Int = 0,
                     val columnPosition: Int = 0,
@@ -59,6 +61,7 @@ abstract class CollageView(context: Context): FrameLayout(context) {
             for (i in 0 until slotCount) {
                 grid.addView(getItemPlaceholder(childRowSpecs[i], childColumnSpecs[i]))
             }
+            this@CollageView.addView(grid)
             return this@CollageView
         }
     }
@@ -79,7 +82,7 @@ abstract class CollageView(context: Context): FrameLayout(context) {
         return imageView
     }
 
-    protected fun getButton(): ImageButton {
+    protected fun getImageButton(): ImageButton {
         val imageButton = ImageButton(context)
         imageButton.layoutParams = linearLayoutParams
         imageButton.setBackgroundColor(Color.BLACK)
