@@ -2,22 +2,17 @@ package com.mlucasmateus.collageview
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import com.yqritc.scalablevideoview.ScalableVideoView
 
 class VideoCollageView(context: Context): CollageView(context) {
-    override fun getItemPlaceholder(rowSpec: CustomSpec, columnSpec: CustomSpec): LinearLayout {
+    override fun getItemPlaceholder(slot: Slot): LinearLayout {
         val videoPlaceholder = LinearLayout(context)
 
-        //TODO: Remove testing code below
-        videoPlaceholder.setPadding(10,10,10,10)
-        videoPlaceholder.setBackgroundColor(Color.BLUE)
-
-        val videoPlaceholderParams = GridLayout.LayoutParams(rowSpec.spec, columnSpec.spec)
-        videoPlaceholderParams.width = cellWidth * columnSpec.size
-        videoPlaceholderParams.height = cellHeight * rowSpec.size
+        val videoPlaceholderParams = GridLayout.LayoutParams(slot.rowSpec, slot.columnSpec)
+        videoPlaceholderParams.width = cellWidth * slot.columnSpan
+        videoPlaceholderParams.height = cellHeight * slot.rowSpan
 
         videoPlaceholder.layoutParams = videoPlaceholderParams
         videoPlaceholder.addView(getImageButton())

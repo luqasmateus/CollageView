@@ -18,24 +18,19 @@ class MainActivity : AppCompatActivity() {
         constraintLayoutParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
         constraintLayoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
         constraintLayoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
-        //var collageView = VideoCollageView(this)
-        val collageViewBuilder = VideoCollageView(this).Builder()
-        /*collageViewBuilder.apply {
-            setRowCount(2)
-            setColumnCount(2)
-            addSlots(CollageView.Slot(),
-                CollageView.Slot(0, 1),
-                CollageView.Slot(1,0),
-                CollageView.Slot(1,1))
-        }*/
-        collageViewBuilder.setRowCount(2).setColumnCount(2).addSlots(CollageView.Slot(),
-            CollageView.Slot(0, 1),
-            CollageView.Slot(1,0),
-            CollageView.Slot(1,1))
-        val collageView = collageViewBuilder.build(600, 600) as VideoCollageView
 
+        val collageView = VideoCollageView(this)
         collageView.layoutParams = constraintLayoutParams
+        collageView.buildGrid(CollageView.GridAttributes().apply {
+            setRowCount(1)
+            setColumnCount(3)
+            addSlots(CollageView.Slot(),
+                CollageView.Slot(columnPosition = 1),
+                CollageView.Slot(columnPosition = 2))
+        })
         collageView.setBackgroundColor(Color.CYAN)
         constraintLayout.addView(collageView)
+
+        collageView.setGridBorderSize(10)
     }
 }

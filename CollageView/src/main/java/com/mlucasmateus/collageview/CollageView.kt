@@ -2,12 +2,14 @@ package com.mlucasmateus.collageview
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ImageView
+import androidx.annotation.Px
+import java.lang.IllegalStateException
+import kotlin.math.floor
 
 abstract class CollageView(context: Context): FrameLayout(context) {
     protected var cellWidth = 0
@@ -15,65 +17,78 @@ abstract class CollageView(context: Context): FrameLayout(context) {
     protected val grid: GridLayout = GridLayout(context)
     protected val linearLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
         LinearLayout.LayoutParams.MATCH_PARENT)
-    protected lateinit var childRowSpecs: Array<CustomSpec>
-    protected lateinit var childColumnSpecs: Array<CustomSpec>
-    protected val logTag = "myLog"
+    private lateinit var gridAttributes: GridAttributes
 
     open class Slot(val rowPosition: Int = 0,
                     val columnPosition: Int = 0,
                     val rowSpan: Int = 1,
-                    val columnSpan: Int = 1)
+                    val columnSpan: Int = 1) {
+        val rowSpec: GridLayout.Spec = GridLayout.spec(rowPosition, rowSpan)
+        val columnSpec: GridLayout.Spec = GridLayout.spec(columnPosition, columnSpan)
+    }
 
-    open inner class Builder {
+    open class GridAttributes {
         private var rowCount = 1
         private var columnCount = 1
-        private var slotCount = 1
+        private var slotList: Array<out Slot> = arrayOf(Slot())
 
-        fun setRowCount(rows: Int): Builder {
+        fun setRowCount(rows: Int): GridAttributes {
             rowCount = rows
             return this
         }
 
-        fun setColumnCount(cols: Int): Builder {
+        fun getRowCount() = rowCount
+
+        fun setColumnCount(cols: Int): GridAttributes {
             columnCount = cols
             return this
         }
 
-        fun addSlots(vararg slotList: Slot): Builder {
-            slotCount = slotList.size
-            childRowSpecs = Array(slotCount) {
-                CustomSpec.spec(slotList[it].rowPosition, slotList[it].rowSpan)
-            }
-            childColumnSpecs = Array(slotCount) {
-                CustomSpec.spec(slotList[it].columnPosition, slotList[it].columnSpan)
-            }
+        fun getColumnCount() = columnCount
+
+        fun addSlots(vararg slotList: Slot): GridAttributes {
+            this.slotList = slotList
             return this
         }
 
-        fun build(width: Int, height: Int): CollageView {
-            grid.rowCount = rowCount
-            grid.columnCount = columnCount
-            /*cellWidth = layoutParams.width / columnCount
-            cellHeight = layoutParams.height / rowCount*/
-            cellWidth = width / columnCount
-            cellHeight = height / rowCount
+        fun getSlotList() = slotList
+    }
 
-            for (i in 0 until slotCount) {
-                grid.addView(getItemPlaceholder(childRowSpecs[i], childColumnSpecs[i]))
-            }
-            this@CollageView.addView(grid)
-            return this@CollageView
+    fun setGridBorderSize(@Px borderSize: Int) {
+        val floorBorderSize = floor(borderSize/2f).toInt()
+        val ceilingBorderSize = floor(borderSize/2f).toInt()
+
+        gridAttributes.getSlotList().forEachIndexed { i: Int, slot: Slot ->
+            grid.getChildAt(i).setPadding(
+                if (slot.columnPosition == 0) borderSize else ceilingBorderSize,
+                if (slot.rowPosition == 0) borderSize else ceilingBorderSize,
+                if (slot.columnPosition + slot.columnSpan == gridAttributes.getColumnCount())
+                    borderSize else floorBorderSize,
+                if (slot.rowPosition + slot.rowSpan == gridAttributes.getRowCount())
+                    borderSize else floorBorderSize
+            )
         }
     }
 
-    data class CustomSpec(var start: Int, var size: Int){
-        val spec: GridLayout.Spec = GridLayout.spec(start, size)
-        companion object{
-            fun spec(start: Int, size: Int) = CustomSpec(start, size)
+    fun buildGrid(gridAttributes: GridAttributes = GridAttributes()) {
+        if (layoutParams == null)
+            throw IllegalStateException()
+        this.gridAttributes = gridAttributes
+
+        grid.rowCount = gridAttributes.getRowCount()
+        grid.columnCount = gridAttributes.getColumnCount()
+
+        cellWidth = layoutParams.width / grid.columnCount
+        cellHeight = layoutParams.height / grid.rowCount
+
+        gridAttributes.getSlotList().forEach {
+            grid.addView(getItemPlaceholder(it))
         }
+
+        addView(grid)
     }
 
-    abstract fun getItemPlaceholder(rowSpec: CustomSpec, columnSpec: CustomSpec): LinearLayout
+    abstract fun getItemPlaceholder(slot: Slot): LinearLayout
 
     protected fun getImageView(): ImageView {
         val imageView = ImageView(context)
