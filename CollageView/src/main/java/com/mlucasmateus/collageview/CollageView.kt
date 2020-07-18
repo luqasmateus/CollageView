@@ -69,6 +69,11 @@ class CollageView(context: Context): GridLayout(context) {
                     "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}")
     }
 
+    fun fillWithItems(item: View) {
+        for (i in 0 until gridAttributes.getSlotCount())
+            addItem(item, i)
+    }
+
     fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener) {
         val videoView = ScalableVideoView(context)
         videoView.setDataSource(path)
@@ -77,11 +82,37 @@ class CollageView(context: Context): GridLayout(context) {
         addItem(videoView, index)
     }
 
+    fun fillWithVideos(path: String, onPreparedListener: MediaPlayer.OnPreparedListener) {
+        for (i in 0 until gridAttributes.getSlotCount())
+            addVideo(path, i, onPreparedListener)
+    }
+
     fun addImage(path: String, index: Int) {
         val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         imageView.setImageURI(Uri.parse(path))
         addItem(imageView, index)
+    }
+
+    fun fillWithImages(path: String) {
+        for (i in 0 until gridAttributes.getSlotCount())
+            addImage(path, i)
+    }
+
+    fun addButton(resId: Int, index: Int, listener: OnClickListener? = null) {
+        val imageButton = ImageButton(context)
+        imageButton.setBackgroundColor(Color.BLACK)
+        imageButton.setImageResource(resId)
+        imageButton.scaleType = ImageView.ScaleType.FIT_CENTER
+        imageButton.adjustViewBounds = true
+        if (listener != null)
+            imageButton.setOnClickListener(listener)
+        addItem(imageButton, index)
+    }
+
+    fun fillWithButtons(resId: Int, listener: OnClickListener? = null) {
+        for (i in 0 until gridAttributes.getSlotCount())
+            addButton(resId, i, listener)
     }
 
     fun setBorderSize(@Px borderSize: Int) {
@@ -133,12 +164,5 @@ class CollageView(context: Context): GridLayout(context) {
         basicView.setBackgroundColor(Color.BLACK)
         basicView.layoutParams = linearLayoutParams
         return basicView
-    }
-
-    private fun getImageButton(): ImageButton {
-        val imageButton = ImageButton(context)
-        imageButton.layoutParams = linearLayoutParams
-        imageButton.setBackgroundColor(Color.BLACK)
-        return imageButton
     }
 }
