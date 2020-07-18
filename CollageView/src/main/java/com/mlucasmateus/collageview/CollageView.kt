@@ -58,36 +58,33 @@ class CollageView(context: Context): GridLayout(context) {
         fun getSlotCount() = slotList.size
     }
 
-    fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener) {
+    fun addItem(item: View, index: Int) {
         if (index >= 0 && index < gridAttributes.getSlotCount()) {
             val childView = getChildAt(index) as LinearLayout
             childView.removeAllViews()
-            val videoView = ScalableVideoView(context)
-            videoView.layoutParams = linearLayoutParams
-            videoView.setDataSource(path)
-            videoView.setScalableType(ScalableType.CENTER_CROP)
-            videoView.prepare(onPreparedListener)
-            childView.addView(videoView)
+            item.layoutParams = linearLayoutParams
+            childView.addView(item)
         }else
             throw NoSuchElementException("This CollageView doesn't have a slot at index $index." +
                     "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}")
+    }
+
+    fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener) {
+        val videoView = ScalableVideoView(context)
+        videoView.setDataSource(path)
+        videoView.setScalableType(ScalableType.CENTER_CROP)
+        videoView.prepare(onPreparedListener)
+        addItem(videoView, index)
     }
 
     fun addImage(path: String, index: Int) {
-        if (index <= 0 && index < gridAttributes.getSlotCount()) {
-            val childView = getChildAt(index) as LinearLayout
-            childView.removeAllViews()
-            val imageView = ImageView(context)
-            imageView.layoutParams = linearLayoutParams
-            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-            imageView.setImageURI(Uri.parse(path))
-            childView.addView(imageView)
-        }else
-            throw NoSuchElementException("This CollageView doesn't have a slot at index $index." +
-                    "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}")
+        val imageView = ImageView(context)
+        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+        imageView.setImageURI(Uri.parse(path))
+        addItem(imageView, index)
     }
 
-    fun setGridBorderSize(@Px borderSize: Int) {
+    fun setBorderSize(@Px borderSize: Int) {
         val floorBorderSize = floor(borderSize/2f).toInt()
         val ceilingBorderSize = floor(borderSize/2f).toInt()
 

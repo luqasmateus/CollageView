@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.mlucasmateus.collageview.CollageView
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         collageView.setBackgroundColor(Color.CYAN)
         constraintLayout.addView(collageView)
 
-        collageView.setGridBorderSize(10)
+        collageView.setBorderSize(10)
 
         val path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
         collageView.addImage("$path/TestImage.jpg", 0)
@@ -40,5 +41,6 @@ class MainActivity : AppCompatActivity() {
             it.start()
             it.pause()
         })
+        collageView.addItem(Button(this), 2)
     }
 }
