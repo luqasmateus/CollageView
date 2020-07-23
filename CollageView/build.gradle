@@ -2,15 +2,39 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+ext {
+    bintrayRepo = 'CollageView'
+    bintrayName = 'com.mlucasmateus.CollageView'
+
+    publishedGroupId = 'com.mlucasmateus.CollageView'
+    libraryName = 'CollageView'
+    artifact = 'CollageView'
+
+    libraryDescription = 'Make a collage of images and videos'
+
+    siteUrl = 'https://github.com/mlucasmateus/CollageView'
+    gitUrl = 'https://github.com/mlucasmateus/CollageView.git'
+
+    libraryVersion = '0.2.1'
+
+    developerId = 'mlucasmateus'
+    developerName = 'Lucas Mateus'
+    developerEmail = 'mlucasmateus@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName = libraryVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -35,3 +59,5 @@ dependencies {
 
     implementation 'com.yqritc:android-scalablevideoview:1.0.4'
 }
+
+apply from: 'publish.gradle'
