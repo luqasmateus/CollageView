@@ -21,6 +21,8 @@ class CollageView(context: Context): GridLayout(context) {
         LinearLayout.LayoutParams.MATCH_PARENT)
     private lateinit var gridAttributes: GridAttributes
 
+    /**Class Slot is used to define the position and the span of an item inside
+     * CollageView.*/
     class Slot(val rowPosition: Int = 0,
                     val columnPosition: Int = 0,
                     val rowSpan: Int = 1,
@@ -144,6 +146,8 @@ class CollageView(context: Context): GridLayout(context) {
     fun buildGrid(gridAttributes: GridAttributes = GridAttributes()) {
         if (layoutParams == null)
             throw IllegalStateException("LayoutParams wasn't set yet. This CollageView doesn't have a height or a width")
+
+        removeAllViews()
         this.gridAttributes = gridAttributes
 
         rowCount = gridAttributes.getRowCount()

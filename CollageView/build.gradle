@@ -15,7 +15,7 @@ ext {
     siteUrl = 'https://github.com/mlucasmateus/CollageView'
     gitUrl = 'https://github.com/mlucasmateus/CollageView.git'
 
-    libraryVersion = '0.1'
+    libraryVersion = '0.2.1'
 
     developerId = 'mlucasmateus'
     developerName = 'Lucas Mateus'
@@ -34,7 +34,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
-        versionName "0.1"
+        versionName = libraryVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -58,10 +58,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     implementation 'com.yqritc:android-scalablevideoview:1.0.4'
-}
-
-subprojects {
-    tasks.withType(Javadoc).all { enabled = false }
 }
 
 apply from: 'publish.gradle'
