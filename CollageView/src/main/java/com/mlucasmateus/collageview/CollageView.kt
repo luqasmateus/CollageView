@@ -34,7 +34,7 @@ class CollageView(context: Context): GridLayout(context) {
     class GridAttributes {
         private var rowCount = 1
         private var columnCount = 1
-        private var slotList: Array<out Slot> = arrayOf(Slot())
+        private var slotList: Array<Slot> = arrayOf()
 
         fun setRowCount(rows: Int): GridAttributes {
             rowCount = rows
@@ -51,7 +51,7 @@ class CollageView(context: Context): GridLayout(context) {
         fun getColumnCount() = columnCount
 
         fun addSlots(vararg slotList: Slot): GridAttributes {
-            this.slotList = slotList
+            this.slotList = this.slotList.plus(slotList)
             return this
         }
 
@@ -67,8 +67,8 @@ class CollageView(context: Context): GridLayout(context) {
             item.layoutParams = linearLayoutParams
             childView.addView(item)
         }else
-            throw NoSuchElementException("This CollageView doesn't have a slot at index $index." +
-                    "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}")
+            throw NoSuchFieldException("This CollageView doesn't have a slot at index $index. " +
+                    "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}]")
     }
 
     fun fillWithItems(item: View) {
@@ -76,7 +76,7 @@ class CollageView(context: Context): GridLayout(context) {
             addItem(item, i)
     }
 
-    fun getItem(index: Int) = (getChildAt(index) as LinearLayout).getChildAt(0)
+    fun getItem(index: Int): View = (getChildAt(index) as LinearLayout).getChildAt(0)
 
     fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener) {
         val videoView = ScalableVideoView(context)
