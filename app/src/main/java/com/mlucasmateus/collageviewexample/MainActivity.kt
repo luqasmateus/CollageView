@@ -33,8 +33,7 @@ class MainActivity : AppCompatActivity() {
             addSlots(CollageView.Slot(),
                 CollageView.Slot(columnPosition = 1),
                 CollageView.Slot(columnPosition = 2),
-                CollageView.Slot(rowPosition = 1),
-                CollageView.Slot(rowPosition = 1, columnPosition = 1, columnSpan = 2))
+                CollageView.Slot(rowPosition = 1))
         })
         collageView.setBackgroundColor(Color.CYAN)
         constraintLayout.addView(collageView)
@@ -54,6 +53,9 @@ class MainActivity : AppCompatActivity() {
         collageView.getButton(1).setOnClickListener {
             Toast.makeText(this, "Testing Toast", Toast.LENGTH_LONG).show()
             collageView.getImage(0).alpha = 0.2f
+            collageView.buildGrid(collageView.getGridAttributes()
+                .addSlots(CollageView.Slot(rowPosition = 1, columnPosition = 1, columnSpan = 2)))
+            collageView.setBorderSize(15)
         }
     }
 }
