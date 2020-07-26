@@ -21,88 +21,60 @@ class CollageView(context: Context): GridLayout(context) {
         LinearLayout.LayoutParams.MATCH_PARENT)
     private lateinit var gridAttributes: GridAttributes
 
-    /**Class Slot is used to define the position and the span of an item inside
-     * CollageView.*/
-    /*class Slot(val rowPosition: Int = 0,
-                    val columnPosition: Int = 0,
-                    val rowSpan: Int = 1,
-                    val columnSpan: Int = 1) {
-        val rowSpec: Spec = spec(rowPosition, rowSpan)
-        val columnSpec: Spec = spec(columnPosition, columnSpan)
+    interface OnItemClickListener {
+        fun onItemClick(item: View, index: Int)
     }
 
-    class GridAttributes {
-        private var rowCount = 1
-        private var columnCount = 1
-        private var slotList: Array<Slot> = arrayOf()
-
-        fun setRowCount(rows: Int): GridAttributes {
-            rowCount = rows
-            return this
-        }
-
-        fun getRowCount() = rowCount
-
-        fun setColumnCount(cols: Int): GridAttributes {
-            columnCount = cols
-            return this
-        }
-
-        fun getColumnCount() = columnCount
-
-        fun addSlots(vararg slotList: Slot): GridAttributes {
-            this.slotList = this.slotList.plus(slotList)
-            return this
-        }
-
-        fun getSlotList() = slotList
-
-        fun getSlotCount() = slotList.size
-    }*/
-
-    fun addItem(item: View, index: Int) {
+    fun addItem(item: View, index: Int, listener: OnClickListener? = null) {
         if (index >= 0 && index < gridAttributes.getSlotCount()) {
             val childView = getChildAt(index) as LinearLayout
             childView.removeAllViews()
             item.layoutParams = linearLayoutParams
+            item.setOnClickListener(listener)
             childView.addView(item)
         }else
             throw NoSuchFieldException("This CollageView doesn't have a slot at index $index. " +
                     "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}]")
     }
 
-    fun fillWithItems(item: View) {
+    fun fillWithItems(item: View, listener: OnItemClickListener? = null) {
         for (i in 0 until gridAttributes.getSlotCount())
-            addItem(item, i)
+            addItem(item, i, OnClickListener {
+                listener?.onItemClick(it, i)
+            })
     }
 
     fun getItem(index: Int): View = (getChildAt(index) as LinearLayout).getChildAt(0)
 
-    fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener) {
+    fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnClickListener? = null) {
         val videoView = ScalableVideoView(context)
         videoView.setDataSource(path)
         videoView.setScalableType(ScalableType.CENTER_CROP)
         videoView.prepare(onPreparedListener)
-        addItem(videoView, index)
+        addItem(videoView, index, listener)
     }
 
-    fun fillWithVideos(path: String, onPreparedListener: MediaPlayer.OnPreparedListener) {
+    fun fillWithVideos(path: String, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnItemClickListener? = null) {
         for (i in 0 until gridAttributes.getSlotCount())
-            addVideo(path, i, onPreparedListener)
+            addVideo(path, i, onPreparedListener, OnClickListener {
+                listener?.onItemClick(it, i)
+            })
     }
 
     fun getVideo(index: Int): ScalableVideoView = getItem(index) as ScalableVideoView
 
-    fun addImage(path: String, index: Int) {
+    fun addImage(path: String, index: Int, listener: OnClickListener? = null) {
         val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         imageView.setImageURI(Uri.parse(path))
-        addItem(imageView, index)
+        addItem(imageView, index, listener)
     }
 
-    fun fillWithImages(path: String) {
+    fun fillWithImages(path: String, listener: OnItemClickListener? = null) {
         for (i in 0 until gridAttributes.getSlotCount())
-            addImage(path, i)
+            addImage(path, i, OnClickListener {
+                listener?.onItemClick(it, i)
+            })
     }
 
     fun getImage(index: Int) = getItem(index) as ImageView
@@ -113,14 +85,14 @@ class CollageView(context: Context): GridLayout(context) {
         imageButton.setImageResource(resId)
         imageButton.scaleType = ImageView.ScaleType.FIT_CENTER
         imageButton.adjustViewBounds = true
-        if (listener != null)
-            imageButton.setOnClickListener(listener)
-        addItem(imageButton, index)
+        addItem(imageButton, index, listener)
     }
 
-    fun fillWithButtons(resId: Int, listener: OnClickListener? = null) {
+    fun fillWithButtons(resId: Int, listener: OnItemClickListener? = null) {
         for (i in 0 until gridAttributes.getSlotCount())
-            addButton(resId, i, listener)
+            addButton(resId, i, OnClickListener {
+                listener?.onItemClick(it, i)
+            })
     }
 
     fun getButton(index: Int) = getItem(index) as ImageButton
@@ -162,15 +134,15 @@ class CollageView(context: Context): GridLayout(context) {
     }
 
     private fun getItemPlaceholder(slot: Slot): LinearLayout {
-        val videoPlaceholder = LinearLayout(context)
+        val itemPlaceholder = LinearLayout(context)
 
-        val videoPlaceholderParams = LayoutParams(slot.rowSpec, slot.columnSpec)
-        videoPlaceholderParams.width = cellWidth * slot.columnSpan
-        videoPlaceholderParams.height = cellHeight * slot.rowSpan
+        val itemPlaceholderParams = LayoutParams(slot.rowSpec, slot.columnSpec)
+        itemPlaceholderParams.width = cellWidth * slot.columnSpan
+        itemPlaceholderParams.height = cellHeight * slot.rowSpan
 
-        videoPlaceholder.layoutParams = videoPlaceholderParams
-        videoPlaceholder.addView(getBasicView())
-        return videoPlaceholder
+        itemPlaceholder.layoutParams = itemPlaceholderParams
+        itemPlaceholder.addView(getBasicView())
+        return itemPlaceholder
     }
 
     private fun getBasicView(): View {

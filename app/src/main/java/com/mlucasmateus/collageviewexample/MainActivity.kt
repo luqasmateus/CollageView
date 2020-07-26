@@ -40,9 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         val path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
         collageView.setBorderSize(10)
-        collageView.fillWithButtons(R.drawable.flying_cat, View.OnClickListener {
-            collageView.fillWithImages("$path/TestImage.jpg")
-        })
+        collageView.fillWithButtons(R.drawable.flying_cat, null)
 
         collageView.addImage("$path/TestImage.jpg", 0)
         collageView.addVideo("$path/TestVideo.mp4", 2, MediaPlayer.OnPreparedListener {
@@ -56,6 +54,11 @@ class MainActivity : AppCompatActivity() {
             collageView.buildGrid(collageView.getGridAttributes()
                 .addSlots(Slot(rowPosition = 1, columnPosition = 1, columnSpan = 2)))
             collageView.setBorderSize(15)
+            collageView.fillWithButtons(R.drawable.flying_cat, object: CollageView.OnItemClickListener{
+                override fun onItemClick(item: View, index: Int) {
+                    Toast.makeText(this@MainActivity, "$index", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 }
