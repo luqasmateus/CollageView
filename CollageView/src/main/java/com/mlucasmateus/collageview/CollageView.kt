@@ -23,7 +23,7 @@ class CollageView(context: Context): GridLayout(context) {
 
     /**Class Slot is used to define the position and the span of an item inside
      * CollageView.*/
-    class Slot(val rowPosition: Int = 0,
+    /*class Slot(val rowPosition: Int = 0,
                     val columnPosition: Int = 0,
                     val rowSpan: Int = 1,
                     val columnSpan: Int = 1) {
@@ -58,7 +58,7 @@ class CollageView(context: Context): GridLayout(context) {
         fun getSlotList() = slotList
 
         fun getSlotCount() = slotList.size
-    }
+    }*/
 
     fun addItem(item: View, index: Int) {
         if (index >= 0 && index < gridAttributes.getSlotCount()) {
