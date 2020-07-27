@@ -40,7 +40,11 @@ class MainActivity : AppCompatActivity() {
 
         val path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
         collageView.setBorderSize(10)
-        collageView.fillWithButtons(R.drawable.flying_cat, null)
+        collageView.fillWithButtons(R.drawable.flying_cat, object: CollageView.OnItemClickListener {
+            override fun onItemClick(item: View, index: Int) {
+                Toast.makeText(this@MainActivity, "A FLYING CAT!!!", Toast.LENGTH_LONG).show()
+            }
+        })
 
         collageView.addImage("$path/TestImage.jpg", 0)
         collageView.addVideo("$path/TestVideo.mp4", 2, MediaPlayer.OnPreparedListener {
@@ -48,16 +52,19 @@ class MainActivity : AppCompatActivity() {
             it.pause()
         })
 
-        collageView.getButton(1).setOnClickListener {
+        collageView.getButton(1)?.setOnClickListener {
             Toast.makeText(this, "Testing Toast", Toast.LENGTH_LONG).show()
-            collageView.getImage(0).alpha = 0.2f
-            collageView.buildGrid(collageView.getGridAttributes()
+            collageView.getImage(0)?.alpha = 0.2f
+            collageView.rebuildGrid(collageView.getGridAttributes()
                 .addSlots(Slot(rowPosition = 1, columnPosition = 1, columnSpan = 2)))
-            collageView.setBorderSize(15)
-            collageView.fillWithButtons(R.drawable.flying_cat, object: CollageView.OnItemClickListener{
-                override fun onItemClick(item: View, index: Int) {
-                    Toast.makeText(this@MainActivity, "$index", Toast.LENGTH_SHORT).show()
-                }
+            collageView.addButton(R.drawable.flying_cat, 4, View.OnClickListener {
+                Toast.makeText(this, "Rebuild works", Toast.LENGTH_LONG).show()
+                collageView.setBorderSize(25)
+                collageView.fillWithButtons(R.drawable.flying_cat, object: CollageView.OnItemClickListener{
+                    override fun onItemClick(item: View, index: Int) {
+                        Toast.makeText(this@MainActivity, "$index", Toast.LENGTH_SHORT).show()
+                    }
+                })
             })
         }
     }
