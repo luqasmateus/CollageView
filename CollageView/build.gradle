@@ -15,7 +15,7 @@ ext {
     siteUrl = 'https://github.com/mlucasmateus/CollageView'
     gitUrl = 'https://github.com/mlucasmateus/CollageView.git'
 
-    libraryVersion = '1.0.0-pre-release'
+    libraryVersion = '1.1.0'
 
     developerId = 'mlucasmateus'
     developerName = 'Lucas Mateus'
