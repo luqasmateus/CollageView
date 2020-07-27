@@ -40,7 +40,7 @@ class CollageView(context: Context): GridLayout(context) {
             val childView = getChildAt(index) as LinearLayout
             childView.removeAllViews()
             item.layoutParams = linearLayoutParams
-            if (listener != null) item.setOnClickListener(listener)
+            listener ?: item.setOnClickListener(listener)
             childView.addView(item)
         }else
             throw NoSuchFieldException("This CollageView doesn't have a slot at index $index. " +
@@ -141,7 +141,11 @@ class CollageView(context: Context): GridLayout(context) {
     }
 
     fun releaseAt(index: Int) {
-        getVideo(index)?.release()
+        getVideo(index)?.apply {
+            stop()
+            reset()
+            release()
+        }
     }
 
     fun release() {
