@@ -29,13 +29,62 @@ class CollageView(context: Context): GridLayout(context) {
         fun onItemClick(item: View, index: Int)
     }
 
-    abstract class Item(val index: Int, val listener: OnClickListener?)
-    class Image(index: Int, listener: OnClickListener?, val path: String): Item(index, listener)
-    class Video(index: Int, listener: OnClickListener?, val path: String,
-                val onPreparedListener: MediaPlayer.OnPreparedListener): Item(index, listener)
-    class Button(index: Int, listener: OnClickListener?, val resId: Int): Item(index, listener)
+    abstract class Item(val listener: OnClickListener?)
+    class Image(listener: OnClickListener?, val path: String): Item(listener)
+    class Video(listener: OnClickListener?, val path: String, val onPreparedListener: MediaPlayer.OnPreparedListener): Item(listener)
+    class Button(listener: OnClickListener?, val resId: Int): Item(listener)
 
-    private fun addItem(item: View, index: Int, listener: OnClickListener? = null) {
+    fun add(item: Item, index: Int) {
+        when (item) {
+            is Image -> addImage(item, index)
+            is Video -> addVideo(item, index)
+            is Button -> addButton(item, index)
+        }
+    }
+
+    private fun addImage(image: Image, index: Int) {
+        val imageView = ImageView(context)
+        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+        imageView.setImageURI(Uri.parse(image.path))
+        append(imageView, index, image.listener)
+    }
+
+    private fun addVideo(video: Video, index: Int) {
+        val videoView = ScalableVideoView(context)
+        videoView.setDataSource(video.path)
+        videoView.setScalableType(ScalableType.CENTER_CROP)
+        videoView.prepare(video.onPreparedListener)
+        append(videoView, index, video.listener)
+    }
+
+    private fun addButton(button: Button, index: Int) {
+        val imageButton = ImageButton(context)
+        imageButton.layoutParams = frameLayoutParams
+        imageButton.setBackgroundColor(Color.BLACK)
+        imageButton.setImageResource(button.resId)
+        imageButton.scaleType = ImageView.ScaleType.FIT_CENTER
+        imageButton.adjustViewBounds = true
+        append(imageButton, index, button.listener)
+    }
+
+    fun fill(startIndex: Int = 0, listener: OnItemClickListener? = null, vararg items: Item) {
+        items.forEachIndexed { index, item ->
+            add(item, index)
+        }
+    }
+
+    fun fillEmptySpaces(startIndex: Int = 0, listener: OnItemClickListener? = null, vararg items: Item) {
+        loop@ for (i in startIndex until items.size){
+            when (items[i]) {
+                is Image -> continue@loop
+                is Video -> continue@loop
+                is Button -> continue@loop
+                else -> add(items[i], i)
+            }
+        }
+    }
+
+    private fun append(item: View, index: Int, listener: OnClickListener? = null) {
         if (index >= 0 && index < gridAttributes.getSlotCount()) {
             val childView = getChildAt(index) as FrameLayout
             removeItem(index)
@@ -56,89 +105,11 @@ class CollageView(context: Context): GridLayout(context) {
         }
     }
 
-    fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnClickListener? = null) {
-        val video = Video(index, listener, path, onPreparedListener)
-        addVideo(video)
-        items.add(index, video)
-    }
-
-    private fun addVideo(video: Video) {
-        val videoView = ScalableVideoView(context)
-        videoView.setDataSource(video.path)
-        videoView.setScalableType(ScalableType.CENTER_CROP)
-        videoView.prepare(video.onPreparedListener)
-        addItem(videoView, video.index, video.listener)
-    }
-
-    @Deprecated("Please use fill() or fillEmptySpaces() instead." +
-            " This method will no longer be available in version 1.0.0")
-    fun fillWithVideos(path: String, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnItemClickListener? = null) {
-        for (i in 0 until gridAttributes.getSlotCount())
-            addVideo(path, i, onPreparedListener, OnClickListener {
-                listener?.onItemClick(it, i)
-            })
-    }
-
     fun getVideo(index: Int) = getItem(index) as ScalableVideoView?
-
-    fun addImage(path: String, index: Int, listener: OnClickListener? = null) {
-        val image = Image(index, listener, path)
-        addImage(image)
-        items.add(index, image)
-    }
-
-    private fun addImage(image: Image) {
-        val imageView = ImageView(context)
-        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-        imageView.setImageURI(Uri.parse(image.path))
-        addItem(imageView, image.index, image.listener)
-    }
-
-    @Deprecated("Please use fill() or fillEmptySpaces() instead." +
-            " This method will no longer be available in version 1.0.0")
-    fun fillWithImages(path: String, listener: OnItemClickListener? = null) {
-        for (i in 0 until gridAttributes.getSlotCount())
-            addImage(path, i, OnClickListener {
-                listener?.onItemClick(it, i)
-            })
-    }
 
     fun getImage(index: Int) = getItem(index) as ImageView?
 
-    fun addButton(resId: Int, index: Int, listener: OnClickListener? = null) {
-        val button = Button(index, listener, resId)
-        addButton(button)
-        items.add(index, button)
-    }
-
-    private fun addButton(button: Button) {
-        val imageButton = ImageButton(context)
-        imageButton.layoutParams = frameLayoutParams
-        imageButton.setBackgroundColor(Color.BLACK)
-        imageButton.setImageResource(button.resId)
-        imageButton.scaleType = ImageView.ScaleType.FIT_CENTER
-        imageButton.adjustViewBounds = true
-        addItem(imageButton, button.index, button.listener)
-    }
-
-    @Deprecated("Please use fill() or fillEmptySpaces() instead." +
-            " This method will no longer be available in version 1.0.0")
-    fun fillWithButtons(resId: Int, listener: OnItemClickListener? = null) {
-        for (i in 0 until gridAttributes.getSlotCount())
-            addButton(resId, i, OnClickListener {
-                listener?.onItemClick(it, i)
-            })
-    }
-
     fun getButton(index: Int) = getItem(index) as ImageButton?
-
-    fun fill(startIndex: Int = 0, listener: OnItemClickListener? = null, vararg items: Item) {
-        TODO()
-    }
-
-    fun fillEmptySpaces(startIndex: Int = 0, listener: OnItemClickListener? = null, vararg items: Item) {
-        TODO()
-    }
 
     fun setBorderSize(@Px borderSize: Int) {
         val floorBorderSize = floor(borderSize/2f).toInt()
@@ -166,9 +137,9 @@ class CollageView(context: Context): GridLayout(context) {
     }
 
     fun release() {
-        items.forEach{
-            if (it is Video)
-                releaseAt(it.index)
+        items.forEachIndexed { index, item ->
+            if (item is Video)
+                releaseAt(index)
         }
     }
 
@@ -205,11 +176,9 @@ class CollageView(context: Context): GridLayout(context) {
         buildGrid(gridAttributes)
         setBorderSize(borderSize)
 
-        items.forEach {
-            when (it) {
-                is Image -> addImage(it)
-                is Video -> addVideo(it)
-                is Button -> addButton(it)
+        items.forEachIndexed { index, item ->
+            if (item != null) {
+                add(item, index)
             }
         }
     }
@@ -230,5 +199,53 @@ class CollageView(context: Context): GridLayout(context) {
         val basicView = View(context)
         basicView.setBackgroundColor(Color.BLACK)
         return basicView
+    }
+
+    @Deprecated("Please use add() instead. This method will no longer be available in version 1.0.0")
+    fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnClickListener? = null) {
+        val video = Video(listener, path, onPreparedListener)
+        addVideo(video, index)
+        items.add(index, video)
+    }
+
+    @Deprecated("Please use add() instead. This method will no longer be available in version 1.0.0")
+    fun addImage(path: String, index: Int, listener: OnClickListener? = null) {
+        val image = Image(listener, path)
+        addImage(image, index)
+        items.add(index, image)
+    }
+
+    @Deprecated("Please use add() instead. This method will no longer be available in version 1.0.0")
+    fun addButton(resId: Int, index: Int, listener: OnClickListener? = null) {
+        val button = Button(listener, resId)
+        addButton(button, index)
+        items.add(index, button)
+    }
+
+    @Deprecated("Please use fill() or fillEmptySpaces() instead." +
+            " This method will no longer be available in version 1.0.0")
+    fun fillWithVideos(path: String, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnItemClickListener? = null) {
+        for (i in 0 until gridAttributes.getSlotCount())
+            addVideo(path, i, onPreparedListener, OnClickListener {
+                listener?.onItemClick(it, i)
+            })
+    }
+
+    @Deprecated("Please use fill() or fillEmptySpaces() instead." +
+            " This method will no longer be available in version 1.0.0")
+    fun fillWithImages(path: String, listener: OnItemClickListener? = null) {
+        for (i in 0 until gridAttributes.getSlotCount())
+            addImage(path, i, OnClickListener {
+                listener?.onItemClick(it, i)
+            })
+    }
+
+    @Deprecated("Please use fill() or fillEmptySpaces() instead." +
+            " This method will no longer be available in version 1.0.0")
+    fun fillWithButtons(resId: Int, listener: OnItemClickListener? = null) {
+        for (i in 0 until gridAttributes.getSlotCount())
+            addButton(resId, i, OnClickListener {
+                listener?.onItemClick(it, i)
+            })
     }
 }
