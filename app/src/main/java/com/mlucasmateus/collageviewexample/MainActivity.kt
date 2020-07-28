@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         val path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
         collageView.setBorderSize(10)
-        collageView.fillWithButtons(R.drawable.flying_cat, object: CollageView.OnItemClickListener {
+        collageView.fillWithButtons(R.drawable.flying_cat_xml, object: CollageView.OnItemClickListener {
             override fun onItemClick(item: View, index: Int) {
                 Toast.makeText(this@MainActivity, "A FLYING CAT!!!", Toast.LENGTH_LONG).show()
             }
@@ -57,10 +57,10 @@ class MainActivity : AppCompatActivity() {
             collageView.getImage(0)?.alpha = 0.2f
             collageView.rebuildGrid(collageView.getGridAttributes()
                 .addSlots(Slot(rowPosition = 1, columnPosition = 1, columnSpan = 2)))
-            collageView.addButton(R.drawable.flying_cat, 4, View.OnClickListener {
+            collageView.addButton(R.drawable.flying_cat_xml, 4, View.OnClickListener {
                 Toast.makeText(this, "Rebuild works", Toast.LENGTH_LONG).show()
                 collageView.setBorderSize(25)
-                collageView.fillWithButtons(R.drawable.flying_cat, object: CollageView.OnItemClickListener{
+                collageView.fillWithButtons(R.drawable.flying_cat_xml, object: CollageView.OnItemClickListener{
                     override fun onItemClick(item: View, index: Int) {
                         Toast.makeText(this@MainActivity, "$index", Toast.LENGTH_SHORT).show()
                     }

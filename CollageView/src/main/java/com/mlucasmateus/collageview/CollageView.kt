@@ -4,12 +4,12 @@ import android.content.Context
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.annotation.Px
 import com.yqritc.scalablevideoview.ScalableType
 import com.yqritc.scalablevideoview.ScalableVideoView
@@ -21,8 +21,8 @@ class CollageView(context: Context): GridLayout(context) {
     private var cellHeight = 0
     private var borderSize = 0
     private val items: ArrayList<Item> = arrayListOf()
-    private val linearLayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.MATCH_PARENT)
+    private val frameLayoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER }
     private lateinit var gridAttributes: GridAttributes
 
     interface OnItemClickListener {
@@ -37,21 +37,23 @@ class CollageView(context: Context): GridLayout(context) {
 
     private fun addItem(item: View, index: Int, listener: OnClickListener? = null) {
         if (index >= 0 && index < gridAttributes.getSlotCount()) {
-            val childView = getChildAt(index) as LinearLayout
-            childView.removeAllViews()
-            item.layoutParams = linearLayoutParams
-            listener ?: item.setOnClickListener(listener)
+            val childView = getChildAt(index) as FrameLayout
+            removeItem(index)
+            if (listener != null) item.setOnClickListener(listener)
             childView.addView(item)
         }else
             throw NoSuchFieldException("This CollageView doesn't have a slot at index $index. " +
                     "Available slot indexes: [0,${gridAttributes.getSlotCount() - 1}]")
     }
 
-    fun getItem(index: Int): View? = (getChildAt(index) as LinearLayout?)?.getChildAt(0)
+    fun getItem(index: Int): View? = (getChildAt(index) as FrameLayout?)?.getChildAt(1)
 
     fun removeItem(index: Int) {
-        (getChildAt(index) as LinearLayout?)?.removeAllViews()
-        items.remove(items[index])
+        val linearLayout = getChildAt(index) as FrameLayout
+        if (linearLayout.childCount > 1) {
+            linearLayout.removeViewAt(1)
+            items.removeAt(index)
+        }
     }
 
     fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnClickListener? = null) {
@@ -107,6 +109,7 @@ class CollageView(context: Context): GridLayout(context) {
 
     private fun addButton(button: Button) {
         val imageButton = ImageButton(context)
+        imageButton.layoutParams = frameLayoutParams
         imageButton.setBackgroundColor(Color.BLACK)
         imageButton.setImageResource(button.resId)
         imageButton.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -195,8 +198,8 @@ class CollageView(context: Context): GridLayout(context) {
         }
     }
 
-    private fun getItemPlaceholder(slot: Slot): LinearLayout {
-        val itemPlaceholder = LinearLayout(context)
+    private fun getItemPlaceholder(slot: Slot): FrameLayout {
+        val itemPlaceholder = FrameLayout(context)
 
         val itemPlaceholderParams = LayoutParams(slot.rowSpec, slot.columnSpec)
         itemPlaceholderParams.width = cellWidth * slot.columnSpan
@@ -210,7 +213,6 @@ class CollageView(context: Context): GridLayout(context) {
     private fun getBasicView(): View {
         val basicView = View(context)
         basicView.setBackgroundColor(Color.BLACK)
-        basicView.layoutParams = linearLayoutParams
         return basicView
     }
 }
