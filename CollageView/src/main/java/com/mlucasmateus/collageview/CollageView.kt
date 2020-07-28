@@ -20,7 +20,7 @@ class CollageView(context: Context): GridLayout(context) {
     private var cellWidth = 0
     private var cellHeight = 0
     private var borderSize = 0
-    private val items: ArrayList<Item> = arrayListOf()
+    private val items: ArrayList<Item?> = arrayListOf()
     private val frameLayoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
         FrameLayout.LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER }
     private lateinit var gridAttributes: GridAttributes
@@ -59,7 +59,7 @@ class CollageView(context: Context): GridLayout(context) {
     fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnClickListener? = null) {
         val video = Video(index, listener, path, onPreparedListener)
         addVideo(video)
-        items.add(video)
+        items.add(index, video)
     }
 
     private fun addVideo(video: Video) {
@@ -82,7 +82,7 @@ class CollageView(context: Context): GridLayout(context) {
     fun addImage(path: String, index: Int, listener: OnClickListener? = null) {
         val image = Image(index, listener, path)
         addImage(image)
-        items.add(image)
+        items.add(index, image)
     }
 
     private fun addImage(image: Image) {
@@ -104,7 +104,7 @@ class CollageView(context: Context): GridLayout(context) {
     fun addButton(resId: Int, index: Int, listener: OnClickListener? = null) {
         val button = Button(index, listener, resId)
         addButton(button)
-        items.add(button)
+        items.add(index, button)
     }
 
     private fun addButton(button: Button) {
@@ -176,6 +176,8 @@ class CollageView(context: Context): GridLayout(context) {
         gridAttributes.getSlotList().forEach {
             addView(getItemPlaceholder(it))
         }
+
+        items.ensureCapacity(gridAttributes.getSlotCount())
         gridBuilt = true
     }
 
