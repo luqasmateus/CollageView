@@ -10,12 +10,12 @@ ext {
     libraryName = 'CollageView'
     artifact = 'CollageView'
 
-    libraryDescription = 'Make a collage of images and videos'
+    libraryDescription = 'Make a collage of images and videos.'
 
     siteUrl = 'https://github.com/mlucasmateus/CollageView'
     gitUrl = 'https://github.com/mlucasmateus/CollageView.git'
 
-    libraryVersion = '0.4.1'
+    libraryVersion = '0.5.0'
 
     developerId = 'mlucasmateus'
     developerName = 'Lucas Mateus'

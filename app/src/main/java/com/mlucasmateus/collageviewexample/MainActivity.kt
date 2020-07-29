@@ -13,6 +13,8 @@ import com.mlucasmateus.collageview.GridAttributes
 import com.mlucasmateus.collageview.Slot
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var collageView: CollageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -24,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         constraintLayoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
         constraintLayoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
 
-        val collageView = CollageView(this)
+        collageView = CollageView(this)
         collageView.layoutParams = constraintLayoutParams
         collageView.buildGrid(GridAttributes().apply {
             setRowCount(2)
@@ -40,7 +42,38 @@ class MainActivity : AppCompatActivity() {
 
         val path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
         collageView.setBorderSize(10)
-        collageView.fillWithButtons(R.drawable.flying_cat_xml, object: CollageView.OnItemClickListener {
+        collageView.fill(CollageView.Button(0,null, R.drawable.flying_cat_xml),0,
+            object: CollageView.OnItemClickListener {
+            override fun onItemClick(item: View, index: Int) {
+                Toast.makeText(this@MainActivity, "A FLYING CAT!!!", Toast.LENGTH_LONG).show()
+            }
+        })
+
+        collageView.add(CollageView.Image(0,null, "$path/TestImage.jpg"),
+            CollageView.Image(1,null, "$path/TestImage.jpg"))
+        collageView.add(CollageView.Video(2, null, "$path/TestVideo.mp4", MediaPlayer.OnPreparedListener {
+            it.start()
+            it.isLooping = true
+        }))
+
+        collageView.getButton(3)?.setOnClickListener {
+            Toast.makeText(this, "Testing Toast", Toast.LENGTH_LONG).show()
+            collageView.getImage(0)?.alpha = 0.2f
+            collageView.removeItem(1)
+            collageView.rebuildGrid(collageView.getGridAttributes()
+                .addSlots(Slot(rowPosition = 1, columnPosition = 1, columnSpan = 2)))
+            collageView.add(CollageView.Button(4, View.OnClickListener {
+                Toast.makeText(this, "Rebuild works", Toast.LENGTH_LONG).show()
+                collageView.setBorderSize(25)
+                collageView.fillEmptySlots(CollageView.Button(-1, null, R.drawable.flying_cat_xml), 0,
+                    object: CollageView.OnItemClickListener{
+                        override fun onItemClick(item: View, index: Int) {
+                            Toast.makeText(this@MainActivity, "$index", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+            }, R.drawable.flying_cat_xml))
+        }
+        /*collageView.fillWithButtons(R.drawable.flying_cat_xml, object: CollageView.OnItemClickListener {
             override fun onItemClick(item: View, index: Int) {
                 Toast.makeText(this@MainActivity, "A FLYING CAT!!!", Toast.LENGTH_LONG).show()
             }
@@ -66,6 +99,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
             })
-        }
+        }*/
+    }
+
+    override fun onStop() {
+        super.onStop()
+        collageView.release()
     }
 }
