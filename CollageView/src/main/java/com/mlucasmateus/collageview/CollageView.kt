@@ -181,12 +181,7 @@ class CollageView(context: Context): GridLayout(context) {
             addView(getItemPlaceholder(it))
         }
 
-        val itemsAux = items
-        items = Array(gridAttributes.getSlotCount()) {
-            if (it >= itemsAux.size)
-                return@Array null
-            itemsAux[it]
-        }
+        items = Array(gridAttributes.getSlotCount()) { null }
         gridBuilt = true
     }
 
@@ -196,14 +191,17 @@ class CollageView(context: Context): GridLayout(context) {
             return
         }
 
+        val itemsCopy = items.copyOf()
         release()
         buildGrid(gridAttributes)
         setBorderSize(borderSize)
 
-        items.forEach {
-            if (it != null) {
-                add(it)
-            }
+        items = Array(gridAttributes.getSlotCount()) {
+            if (it >= itemsCopy.size)
+                return@Array null
+
+            itemsCopy[it]?.let { item -> add(item) }
+            itemsCopy[it]
         }
     }
 

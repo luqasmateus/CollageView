@@ -1,6 +1,9 @@
 # CollageView
 
 ## Changelog:
+### v0.5.1:
+- [Bug Fix] Calling buildGrid() after adding content was leaving items array populated while leaving CollageView empty.
+
 ### v0.5.0:
 - [Enhancement] Switch items from ArrayList to Array;
 - [New Feature] Introduce add() method. It receives a variable number of Item objects, creates the views accordinly and appends them;
