@@ -20,7 +20,7 @@ class CollageView(context: Context): GridLayout(context) {
     private var cellWidth = 0
     private var cellHeight = 0
     private var borderSize = 0
-    private var items: ArrayList<Item?> = arrayListOf()
+    private var items: Array<Item?> = arrayOf()
     private val frameLayoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
         FrameLayout.LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER }
     private lateinit var gridAttributes: GridAttributes
@@ -29,57 +29,76 @@ class CollageView(context: Context): GridLayout(context) {
         fun onItemClick(item: View, index: Int)
     }
 
-    abstract class Item(val listener: OnClickListener?)
-    class Image(listener: OnClickListener?, val path: String): Item(listener)
-    class Video(listener: OnClickListener?, val path: String, val onPreparedListener: MediaPlayer.OnPreparedListener): Item(listener)
-    class Button(listener: OnClickListener?, val resId: Int): Item(listener)
+    abstract class Item(var index: Int, var listener: OnClickListener?)
+    class Image(index: Int, listener: OnClickListener?, val path: String): Item(index, listener)
+    class Video(index: Int, listener: OnClickListener?, val path: String, val onPreparedListener: MediaPlayer.OnPreparedListener): Item(index, listener)
+    class Button(index: Int, listener: OnClickListener?, val resId: Int): Item(index, listener)
 
-    fun add(item: Item, index: Int) {
-        when (item) {
-            is Image -> addImage(item, index)
-            is Video -> addVideo(item, index)
-            is Button -> addButton(item, index)
+    fun add(vararg items: Item) {
+        items.forEach {
+            when (it) {
+                is Image -> addImage(it)
+                is Video -> addVideo(it)
+                is Button -> addButton(it)
+                else -> throw IllegalArgumentException("The argument needs to be an Item type.")
+            }
+            this.items[it.index] = it
         }
     }
 
-    private fun addImage(image: Image, index: Int) {
+    private fun addImage(image: Image) {
         val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         imageView.setImageURI(Uri.parse(image.path))
-        append(imageView, index, image.listener)
+        append(imageView, image.index, image.listener)
     }
 
-    private fun addVideo(video: Video, index: Int) {
+    private fun addVideo(video: Video) {
         val videoView = ScalableVideoView(context)
         videoView.setDataSource(video.path)
         videoView.setScalableType(ScalableType.CENTER_CROP)
         videoView.prepare(video.onPreparedListener)
-        append(videoView, index, video.listener)
+        append(videoView, video.index, video.listener)
     }
 
-    private fun addButton(button: Button, index: Int) {
+    private fun addButton(button: Button) {
         val imageButton = ImageButton(context)
         imageButton.layoutParams = frameLayoutParams
         imageButton.setBackgroundColor(Color.BLACK)
         imageButton.setImageResource(button.resId)
         imageButton.scaleType = ImageView.ScaleType.FIT_CENTER
         imageButton.adjustViewBounds = true
-        append(imageButton, index, button.listener)
+        append(imageButton, button.index, button.listener)
     }
 
-    fun fill(startIndex: Int = 0, listener: OnItemClickListener? = null, vararg items: Item) {
-        items.forEachIndexed { index, item ->
-            add(item, index)
-        }
+    fun fill(item: Item, startIndex: Int = 0, listener: OnItemClickListener? = null) {
+       for (i in startIndex until items.size){
+           val clickListener = OnClickListener {
+               listener?.onItemClick(it, i)
+           }
+           add(when (item) {
+               is Image -> Image(i, clickListener, item.path)
+               is Video -> Video(i, clickListener, item.path, item.onPreparedListener)
+               is Button -> Button(i, clickListener, item.resId)
+               else -> throw IllegalArgumentException("The argument needs to be an Item type.")
+           }
+           )
+       }
     }
 
-    fun fillEmptySpaces(startIndex: Int = 0, listener: OnItemClickListener? = null, vararg items: Item) {
-        loop@ for (i in startIndex until items.size){
-            when (items[i]) {
-                is Image -> continue@loop
-                is Video -> continue@loop
-                is Button -> continue@loop
-                else -> add(items[i], i)
+    fun fillEmptySlots(item: Item, startIndex: Int = 0, listener: OnItemClickListener? = null) {
+        for (i in startIndex until items.size) {
+            if (items[i] == null) {
+                val clickListener = OnClickListener {
+                    listener?.onItemClick(it, i)
+                }
+                add(when (item) {
+                        is Image -> Image(i, clickListener, item.path)
+                        is Video -> Video(i, clickListener, item.path, item.onPreparedListener)
+                        is Button -> Button(i, clickListener, item.resId)
+                        else -> throw IllegalArgumentException("The argument needs to be an Item type.")
+                    }
+                )
             }
         }
     }
@@ -101,7 +120,7 @@ class CollageView(context: Context): GridLayout(context) {
         val linearLayout = getChildAt(index) as FrameLayout
         if (linearLayout.childCount > 1) {
             linearLayout.removeViewAt(1)
-            items.removeAt(index)
+            items[index] = null
         }
     }
 
@@ -162,7 +181,12 @@ class CollageView(context: Context): GridLayout(context) {
             addView(getItemPlaceholder(it))
         }
 
-        items.ensureCapacity(gridAttributes.getSlotCount())
+        val itemsAux = items
+        items = Array(gridAttributes.getSlotCount()) {
+            if (it >= itemsAux.size)
+                return@Array null
+            itemsAux[it]
+        }
         gridBuilt = true
     }
 
@@ -176,9 +200,9 @@ class CollageView(context: Context): GridLayout(context) {
         buildGrid(gridAttributes)
         setBorderSize(borderSize)
 
-        items.forEachIndexed { index, item ->
-            if (item != null) {
-                add(item, index)
+        items.forEach {
+            if (it != null) {
+                add(it)
             }
         }
     }
@@ -203,23 +227,23 @@ class CollageView(context: Context): GridLayout(context) {
 
     @Deprecated("Please use add() instead. This method will no longer be available in version 1.0.0")
     fun addVideo(path: String, index: Int, onPreparedListener: MediaPlayer.OnPreparedListener, listener: OnClickListener? = null) {
-        val video = Video(listener, path, onPreparedListener)
-        addVideo(video, index)
-        items.add(index, video)
+        val video = Video(index,listener, path, onPreparedListener)
+        addVideo(video)
+        items[index] = video
     }
 
     @Deprecated("Please use add() instead. This method will no longer be available in version 1.0.0")
     fun addImage(path: String, index: Int, listener: OnClickListener? = null) {
-        val image = Image(listener, path)
-        addImage(image, index)
-        items.add(index, image)
+        val image = Image(index, listener, path)
+        addImage(image)
+        items[index] = image
     }
 
     @Deprecated("Please use add() instead. This method will no longer be available in version 1.0.0")
     fun addButton(resId: Int, index: Int, listener: OnClickListener? = null) {
-        val button = Button(listener, resId)
-        addButton(button, index)
-        items.add(index, button)
+        val button = Button(index, listener, resId)
+        addButton(button)
+        items[index] = button
     }
 
     @Deprecated("Please use fill() or fillEmptySpaces() instead." +
