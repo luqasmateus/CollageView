@@ -4,22 +4,21 @@ apply plugin: 'kotlin-android-extensions'
 
 ext {
     bintrayRepo = 'CollageView'
-    bintrayName = 'com.mlucasmateus.CollageView'
+    bintrayName = 'com.luqasmateus.CollageView'
 
-    publishedGroupId = 'com.mlucasmateus.CollageView'
+    publishedGroupId = 'com.luqasmateus.CollageView'
     libraryName = 'CollageView'
     artifact = 'CollageView'
 
     libraryDescription = 'Make a collage of images and videos.'
 
-    siteUrl = 'https://github.com/mlucasmateus/CollageView'
-    gitUrl = 'https://github.com/mlucasmateus/CollageView.git'
+    siteUrl = 'https://github.com/luqasmateus/CollageView'
+    gitUrl = 'https://github.com/luqasmateus/CollageView.git'
 
     libraryVersion = '0.5.1'
 
-    developerId = 'mlucasmateus'
+    developerId = 'luqasmateus'
     developerName = 'Lucas Mateus'
-    developerEmail = 'mlucasmateus@gmail.com'
 
     licenseName = 'The Apache Software License, Version 2.0'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
@@ -52,7 +51,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.1'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

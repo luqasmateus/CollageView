@@ -1,4 +1,4 @@
-package com.mlucasmateus.collageviewexample
+package com.luqasmateus.collageviewexample
 
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -8,9 +8,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.mlucasmateus.collageview.CollageView
-import com.mlucasmateus.collageview.GridAttributes
-import com.mlucasmateus.collageview.Slot
+import com.luqasmateus.collageview.CollageView
+import com.luqasmateus.collageview.GridAttributes
+import com.luqasmateus.collageview.Slot
 
 class MainActivity : AppCompatActivity() {
     private lateinit var collageView: CollageView

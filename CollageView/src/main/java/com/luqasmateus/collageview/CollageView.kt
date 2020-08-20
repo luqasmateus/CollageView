@@ -1,4 +1,4 @@
-package com.mlucasmateus.collageview
+package com.luqasmateus.collageview
 
 import android.content.Context
 import android.graphics.Color

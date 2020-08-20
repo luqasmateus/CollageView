@@ -1,4 +1,4 @@
-package com.mlucasmateus.collageview
+package com.luqasmateus.collageview
 
 class GridAttributes {
     private var rowCount = 1
