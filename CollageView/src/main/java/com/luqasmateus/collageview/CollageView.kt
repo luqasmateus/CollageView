@@ -20,6 +20,7 @@ class CollageView(context: Context): GridLayout(context) {
     private var cellWidth = 0
     private var cellHeight = 0
     private var borderSize = 0
+    private var borderColor = 0
     private var items: Array<Item?> = arrayOf()
     private val frameLayoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
         FrameLayout.LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER }
@@ -116,6 +117,7 @@ class CollageView(context: Context): GridLayout(context) {
 
     fun getItem(index: Int): View? = (getChildAt(index) as FrameLayout?)?.getChildAt(1)
 
+
     fun removeItem(index: Int) {
         val linearLayout = getChildAt(index) as FrameLayout
         if (linearLayout.childCount > 1) {
@@ -129,6 +131,8 @@ class CollageView(context: Context): GridLayout(context) {
     fun getImage(index: Int) = getItem(index) as ImageView?
 
     fun getButton(index: Int) = getItem(index) as ImageButton?
+
+    fun getItemsList() = items
 
     fun setBorderSize(@Px borderSize: Int) {
         val floorBorderSize = floor(borderSize/2f).toInt()
@@ -146,6 +150,15 @@ class CollageView(context: Context): GridLayout(context) {
         }
         this.borderSize = borderSize
     }
+
+    fun getBorderSize() = borderSize
+
+    override fun setBackgroundColor(color: Int) {
+        super.setBackgroundColor(color)
+        borderColor = color
+    }
+
+    fun getBorderColor() = borderColor
 
     fun releaseAt(index: Int) {
         getVideo(index)?.apply {
