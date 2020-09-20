@@ -1,14 +1,35 @@
 # CollageView
 
-## Disclaimer
-This library is distributed under Apache Software License v2.0, while mobile-ffmpeg is under LGPL 3.0. If you download CollageView from Bintray (instructions below), you agree with using mobile-ffmpeg-min package (which doesn't contain any GPL'd code), version 4.4. If you want to use a different version of mobile-ffmpeg, feel free to download the source code from this repository and change mobile-ffmpeg's version or package.
+## Installing
+### Using Gradle:
+```
+implementation 'com.luqasmateus.CollageView:CollageView:0.5.1'
+```
+### Using Maven:
+```
+<dependency>
+  <groupId>com.luqasmateus.CollageView</groupId>
+  <artifactId>CollageView</artifactId>
+  <version>0.5.1</version>
+  <type>pom</type>
+</dependency>
+```
+### Using Ivy:
+```
+<dependency org='com.luqasmateus.CollageView' name='CollageView' rev='0.5.1'>
+  <artifact name='CollageView' ext='pom' ></artifact>
+</dependency>
+```
 
-## Changelog:
+## Disclaimer
+<p style="text-align: justify;">This library is distributed under Apache Software License v2.0, while `mobile-ffmpeg` is under LGPL 3.0. If you download CollageView from Bintray (instructions below), you agree with using `mobile-ffmpeg-min` package (which doesn't contain any GPL'd code), version 4.4. If you want to use a different version of `mobile-ffmpeg`, feel free to download the source code from this repository and choose another `mobile-ffmpeg` version or package.</p>
+
+## Changelog
 ### v0.6.0
 - [New Feature] Introduce MediaGenerator. It is a class designed to render a CollageView into an image or a video using mobile-ffmpeg;
 - [New Feature] Introduce new getters. The methods getItemsList(), getBorderColor() and getBorderSize() are now available;
 - [Adjustment] In order to support ffmpeg, minSdkVersion was upped to API 24.
-<details><summary>Older Versions Changelog</summary>
+<details><summary>Older Versions</summary>
   
   ### v0.5.1:
   - [Bug Fix] Calling buildGrid() after adding content was leaving items array populated while leaving CollageView empty;

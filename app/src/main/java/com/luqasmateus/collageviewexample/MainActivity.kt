@@ -1,7 +1,6 @@
 package com.luqasmateus.collageviewexample
 
 import android.graphics.Color
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
@@ -16,7 +15,8 @@ import com.luqasmateus.collageview.Slot
 
 class MainActivity : AppCompatActivity() {
     private lateinit var collageView: CollageView
-    private lateinit var mediaGenerator: MediaGenerator
+    private var mediaGenerator = MediaGenerator()
+    private lateinit var path: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         constraintLayoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
         constraintLayoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
 
-        val path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
+        path = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath.toString()
         collageView = CollageView(this)
         collageView.layoutParams = constraintLayoutParams
         constraintLayout.addView(collageView)
@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         })
         collageView.setBorderSize(15)
         collageView.setBackgroundColor(Color.CYAN)
-        mediaGenerator = path?.let { MediaGenerator(it) }!!
 
         collageView.fill(CollageView.Button(0,null, R.drawable.flying_cat_xml),0,
             object: CollageView.OnItemClickListener {
@@ -56,7 +55,11 @@ class MainActivity : AppCompatActivity() {
 
         collageView.add(CollageView.Image(0,null, "$path/TestImage.jpg"),
             CollageView.Image(1,null, "$path/TestImage.jpg"))
-        collageView.fill(CollageView.Video(2, null, "$path/under3.mp4", {
+        collageView.add(CollageView.Video(2, null, "$path/TestVideo.mp4"){
+            it.start()
+            it.pause()
+        })
+        collageView.add(CollageView.Video(3, null, "$path/under2.mp4", {
             it.start()
             it.pause()
         }))
@@ -93,14 +96,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startGeneratingVideo(view: View) {
-        mediaGenerator.generate(collageView, MediaGenerator.VIDEO) {
-            findViewById<ProgressBar>(R.id.progress).incrementProgressBy(it)
+        val attr = MediaGenerator.MediaAttributes(collageView, path, outputType = MediaGenerator.VIDEO)
+        attr.addExtraAudioTrack("$path/OhSickNight.wav", 45000, 15000)
+        findViewById<ProgressBar>(R.id.progress).progress = 0
+        mediaGenerator.generate(attr) {
+            for (i in 1..it)
+                findViewById<ProgressBar>(R.id.progress).incrementProgressBy(1)
         }
     }
 
     fun startGeneratingImage(view: View) {
-        mediaGenerator.generate(collageView, MediaGenerator.IMAGE) {
-            findViewById<ProgressBar>(R.id.progress).incrementProgressBy(it)
+        val attr = MediaGenerator.MediaAttributes(collageView, path)
+        findViewById<ProgressBar>(R.id.progress).progress = 0
+        mediaGenerator.generate(attr) {
+            for (i in 1..it)
+                findViewById<ProgressBar>(R.id.progress).incrementProgressBy(1)
         }
     }
 }
